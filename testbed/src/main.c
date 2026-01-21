@@ -1,4 +1,6 @@
 #include "core/logger.h"
+#include "core/kassert.h"
+
 int main(void)
 {
     KDEUG("test message %i, %f", 1, 10.0);
@@ -7,6 +9,6 @@ int main(void)
     KFETAL("test message %i, %f", 1, 10.0);
     KINFO("test message %i, %f", 1, 10.0);
     KTRACE("test message %i, %f", 1, 10.0);
-
+    KASSERT_MSG(1==0, "incorrect evaluation");
     return 0;
 }
