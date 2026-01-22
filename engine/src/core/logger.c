@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include "kassert.h"
+#include "platform/platform.h"
 
 b8 initilize_logging()
 {
@@ -35,7 +36,7 @@ void log_output(LogLevel logLevel,const char* message, ...)
     memset(outputBuffer2,0,MAX_LOG_CHARACTERS);
     sprintf(outputBuffer2,"%s%s\n", log_levels[logLevel],outputBuffer);
 
-    printf("%s", outputBuffer2);
+    platform_console_write(outputBuffer2, logLevel);
 }
 
 void report_assertion_faliure(const char* expression, const char* message, const char* file, int lineNumber)
