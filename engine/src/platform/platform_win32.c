@@ -11,6 +11,9 @@ typedef struct internal_state
     HWND hwnd; //window handle
 } internal_state;
 
+static f64 clock_frequency;
+static LARGE_INTEGER start_time;
+
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
 b8 platform_startup(
@@ -98,6 +101,10 @@ b8 platform_startup(
     //if initially maximized, use SW_SHOWMAXIMIZED : SW_MAXIMIZE
     ShowWindow(state->hwnd, show_window_command_flags);
 
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    clock_frequency = 1.0 / (f64)frequency.QuadPart;
+    QueryPerformanceCounter(&start_time);
     return TRUE;
 }
 
@@ -169,13 +176,14 @@ void platform_console_write_error(const char* message, u8 color)
 
 f64 platform_get_absolute_time()
 {
-    //TODO
-    return 0.0;
+    LARGE_INTEGER now_time;
+    QueryPerformanceCounter(&now_time);
+    return (f64)now_time.QuadPart * clock_frequency;
 }
 
 void platform_sleep(u64 ms)
 {
-    //TODO
+    Sleep(ms);
 }
 LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
 {
