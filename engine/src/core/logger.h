@@ -45,7 +45,7 @@ KAPI void log_output(LogLevel logLevel,const char* message, ...);
 #endif
 
 #if LOG_DEBUG_ENABLE == 1
-#define KDEUG(message, ...) log_output(LOG_DEBUG, message, ##__VA_ARGS__)
+#define KDEBUG(message, ...) log_output(LOG_DEBUG, message, ##__VA_ARGS__)
 #else
 #define KDEBUG(message, ...)
 #endif
