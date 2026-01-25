@@ -3,11 +3,14 @@
 #include "game_types.h"
 #include "core/logger.h"
 #include "core/application.h"
+#include "core/kmemory.h"
 
 extern b8 initilize_game(game* game_init);
 
 int main()
 {
+    initilize_memory();
+
     game _game;
     if(!initilize_game(&_game))
     {
@@ -33,5 +36,6 @@ int main()
         return 2;
     }
 
+    shutdown_memory();
     return 0;
 }

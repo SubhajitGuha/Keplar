@@ -1,8 +1,6 @@
 #include <entry.h>
 #include "game.h"
-
-//TOODO: remove it, find a way to abstract it
-#include <platform/platform.h>
+#include <core/kmemory.h>
 
 b8 initilize_game(game* _game)
 {
@@ -18,7 +16,6 @@ b8 initilize_game(game* _game)
     _game->on_resize = game_on_resize;
 
     //TOODO: remove it, find a way to abstract it
-    _game->game_state = platform_allocate(sizeof(game_state), FALSE);
-
+    _game->game_state = kallocate(sizeof(game_state), MEMORY_TAG_APPLICATION);
     return TRUE;
 }

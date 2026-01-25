@@ -2,6 +2,7 @@
 #include "platform/platform.h"
 #include "game_types.h"
 #include "logger.h"
+#include "kmemory.h"
 
 typedef struct application_state
 {
@@ -33,6 +34,7 @@ b8 create_application(struct game* game_inst)
 
     initilize_logging();
 
+    KDEBUG(get_memory_usage_str());
     //initilize platform.
     if(!platform_startup(
         &app_state.plat_state,
@@ -86,5 +88,7 @@ b8 run_application()
     
     app_state.is_running = FALSE;
     platform_shutdown(&app_state.plat_state);
+    shutdown_logging();
+    
     return TRUE;
 }
