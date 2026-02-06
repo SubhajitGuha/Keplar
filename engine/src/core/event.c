@@ -1,6 +1,7 @@
 #include "core/event.h"
 #include "core/kmemory.h"
 #include "containers/darray.h"
+#include "core/logger.h"
 
 typedef struct registered_event
 {
@@ -27,21 +28,27 @@ b8 event_initilize()
 {
     if(is_initilized == TRUE)
     {
+        KWARN("event_initilize() is called more than once");
         return FALSE;
     }
 
     is_initilized = FALSE;
     kzero_memory(&state, sizeof(state));
     is_initilized = TRUE;
+    return is_initilized;
 }
 
-void event_shutdown();
+void event_shutdown()
+{
+    is_initilized = FALSE;
+}
 
 KAPI b8 event_register(u16 code, void* listner, PFN_on_event on_event)
 {
     if(is_initilized == FALSE)
         return FALSE;
 
+    //if no events are added for this code then first allocate memory
     if(state.registered[code].events == 0)
         state.registered[code].events = darray_create(registered_event);
 
@@ -52,6 +59,7 @@ KAPI b8 event_register(u16 code, void* listner, PFN_on_event on_event)
         if(state.registered[code].events[i].listner == listner)
         {
             //duplicate listner, dont register
+            // KWARN("")
             return FALSE;
         }
     }
