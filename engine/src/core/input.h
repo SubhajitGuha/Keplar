@@ -144,7 +144,7 @@ typedef enum Keys {
 } Keys;
 
 void input_initilize();
-void input_shut_down();
+void input_shutdown();
 void input_update(f64 delta_time);
 
 KAPI b8 input_is_key_down(Keys key);
@@ -160,6 +160,6 @@ KAPI b8 input_was_button_up(Buttons button);
 KAPI void input_get_mouse_position(i32* x, i32* y);
 KAPI void input_get_previous_mouse_position(i32* x, i32* y);
 
-void process_mouse_button(Buttons button, b8 pressed);
-void process_mouse_move(i16 x, i16 y);
-void process_mouse_wheel(i8 delta);
+void input_process_mouse_button(Buttons button, b8 pressed);
+void input_process_mouse_move(i16 x, i16 y);
+void input_process_mouse_wheel(i8 delta);

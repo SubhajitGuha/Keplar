@@ -4,6 +4,8 @@
 #include "core/logger.h"
 #include "core/application.h"
 #include "core/kmemory.h"
+#include "core/event.h"
+#include "core/input.h"
 
 extern b8 initilize_game(game* game_init);
 
@@ -37,5 +39,6 @@ int main()
     }
 
     shutdown_memory();
+
     return 0;
 }

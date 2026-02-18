@@ -37,7 +37,7 @@ void input_initilize()
     is_initilized = TRUE;
     kzero_memory(&state, sizeof(state));
 }
-void input_shut_down()
+void input_shutdown()
 {
     is_initilized = FALSE;
 }
@@ -73,7 +73,7 @@ void input_process_key(Keys key, b8 pressed)
     }
 }
 
-void process_mouse_button(Buttons button, b8 pressed)
+void input_process_mouse_button(Buttons button, b8 pressed)
 {
     if(!is_initilized)
     {
@@ -81,6 +81,7 @@ void process_mouse_button(Buttons button, b8 pressed)
         return;
     }
 
+    // KDEBUG("Mouse Button Pressed ")
     if(state.current_mouse_state.buttons[button] != pressed)
     {
         state.current_mouse_state.buttons[button] = pressed;
@@ -91,13 +92,14 @@ void process_mouse_button(Buttons button, b8 pressed)
         event_fire(pressed?EVENT_CODE_BUTTON_PRESSED:EVENT_CODE_BUTTON_RELEASED,0,context);
     }
 }
-void process_mouse_move(i16 x, i16 y)
+void input_process_mouse_move(i16 x, i16 y)
 {
     if(!is_initilized)
     {
         KWARN("make sure to call input_initilize() at first");
         return;
     }
+    KDEBUG("Mouse Move X: %d, Y: %d", x,y);
     if(state.current_mouse_state.x != x || state.current_mouse_state.y != y)
     {
         state.current_mouse_state.x = x;
@@ -111,7 +113,7 @@ void process_mouse_move(i16 x, i16 y)
     }
 
 }
-void process_mouse_wheel(i8 delta)
+void input_process_mouse_wheel(i8 delta)
 {
     //NOTE no internal state
 
