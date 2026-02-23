@@ -5,6 +5,7 @@
 #include "kmemory.h"
 #include "input.h"
 #include "event.h"
+#include "clock.h"
 
 typedef struct application_state
 {
@@ -12,6 +13,7 @@ typedef struct application_state
     b8 is_running;
     b8 is_suspended;
     platform_state plat_state;
+    clock clock;
     int width;
     int height;
     f64 last_time;
@@ -73,6 +75,10 @@ b8 create_application(struct game* game_inst)
 
 b8 run_application()
 {
+    clock_start(&app_state.clock);
+    clock_update(&app_state.clock);
+    f64 target_frame_time = 1.0/120.0;
+    app_state.last_time = app_state.clock.elapsed_time;
     while (app_state.is_running)
     {
         if(!platform_pump_messages(&app_state.plat_state))
@@ -82,20 +88,39 @@ b8 run_application()
 
         if(!app_state.is_suspended)
         {
-            input_update(0);
+            clock_update(&app_state.clock);
+            f64 current_time = app_state.clock.elapsed_time;
+            f64 delta_time = current_time - app_state.last_time;
+            f64 frame_start_time = platform_get_absolute_time();
+
             if(!app_state.game_instance->update(app_state.game_instance))
             {
                 app_state.is_running = FALSE;
                 KFETAL("game update failed!");
                 break;
             }
-    
+            
             if(!app_state.game_instance->render(app_state.game_instance))
             {
                 app_state.is_running = FALSE;
                 KFETAL("game rendering failed!");
                 break;
             }
+            KDEBUG("delta time %lf", delta_time);
+            f64 frame_end_time = platform_get_absolute_time();
+            f64 elapsed_frame_time = frame_end_time-frame_start_time;
+            f64 remaining_seconds = target_frame_time - elapsed_frame_time;
+            //if the frame is finished executing before the target time return handle to os.
+            if(remaining_seconds > 0)
+            {
+                u64 remaining_ms = remaining_seconds * 1000;
+                if(remaining_ms > 0)
+                {
+                    platform_sleep(remaining_ms-1);
+                }
+            }
+            input_update(delta_time );
+            app_state.last_time = current_time;
         }
     }
     
