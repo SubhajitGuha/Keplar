@@ -11,7 +11,7 @@ b8 renderer_initilize(const char* application_name, struct platform_state* plat_
     renderer_backend_initilize(_backend);
 
     _backend->plat_state = plat_state;
-    _backend->initilize(_backend, application_name);
+    return _backend->initilize(_backend, application_name);
 }
 
 void renderer_shutdown()
@@ -21,7 +21,7 @@ void renderer_shutdown()
     kfree(_backend,sizeof(renderer_backend),MEMORY_TAG_RENDERER);
 }
 
-b8 renderer_resize(int width, int height)
+void renderer_resize(int width, int height)
 {
     _backend->resize(_backend,width, height);
 }

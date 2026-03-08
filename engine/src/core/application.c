@@ -6,7 +6,7 @@
 #include "input.h"
 #include "event.h"
 #include "clock.h"
-
+#include "Renderer/renderer_frontend.h"
 typedef struct application_state
 {
     game* game_instance;
@@ -42,7 +42,6 @@ b8 create_application(struct game* game_inst)
     initilize_logging();
     input_initilize();
     event_initilize();
-
     KDEBUG(get_memory_usage_str());
     //initilize platform.
     if(!platform_startup(
@@ -52,11 +51,16 @@ b8 create_application(struct game* game_inst)
         app_state.game_instance->application_config.window_start_post_y,
         app_state.game_instance->application_config.window_width,
         app_state.game_instance->application_config.window_height))
-    {
-        KFETAL("Cannot startup platform!");
+        {
+            KFETAL("Cannot startup platform!");
+            return FALSE;
+        }
+
+        // Renderer startup
+    if (!renderer_initilize(game_inst->application_config.app_name, &app_state.plat_state)) {
+        KFETAL("Failed to initialize renderer. Aborting application.");
         return FALSE;
     }
-
     event_register(EVENT_CODE_APPLICATION_QUIT,0,application_on_event);
     event_register(EVENT_CODE_KEY_PRESSED,0,application_on_key);
     event_register(EVENT_CODE_KEY_RELEASED,0,application_on_key);
@@ -106,7 +110,7 @@ b8 run_application()
                 KFETAL("game rendering failed!");
                 break;
             }
-            KDEBUG("delta time %lf", delta_time);
+            //KDEBUG("delta time %lf", delta_time);
             f64 frame_end_time = platform_get_absolute_time();
             f64 elapsed_frame_time = frame_end_time-frame_start_time;
             f64 remaining_seconds = target_frame_time - elapsed_frame_time;
@@ -130,6 +134,7 @@ b8 run_application()
     event_unregister(EVENT_CODE_KEY_PRESSED,0,application_on_key);
     event_unregister(EVENT_CODE_KEY_RELEASED,0,application_on_key);
 
+    renderer_shutdown();
     platform_shutdown(&app_state.plat_state);
     shutdown_logging();
     input_shutdown();

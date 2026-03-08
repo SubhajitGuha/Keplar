@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <windowsx.h>
 #include "core/logger.h"
+#include "containers/darray.h"
 
 typedef struct internal_state
 {
@@ -261,4 +262,8 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
     return DefWindowProcA(hwnd, msg, w_param, l_param);
 }
 
+void platform_get_required_extension_name(const char*** name_array)
+{
+    darray_push(*name_array, &"VK_KHR_win32_surface");
+}
 #endif
