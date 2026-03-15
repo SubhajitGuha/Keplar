@@ -4,6 +4,7 @@
 #include "core/logger.h"
 #include "platform/platform.h"
 #include "vulkan_platform.h"
+#include "vulkan_device.h"
 #include "vulkan_types.inl"
 
 // Provided by VK_EXT_debug_utils
@@ -85,7 +86,7 @@ b8 vulkan_renderer_initilize(renderer_backend* _backend, const char* app_name)
         }
         if(!found)
         {
-            KFETAL("layer not found...");
+            KFATAL("layer not found...");
             return FALSE;
         }
     }
@@ -116,6 +117,19 @@ b8 vulkan_renderer_initilize(renderer_backend* _backend, const char* app_name)
     VK_CHECK(func(context.vulkan_instance,&debug_create_info,context.vulkan_alloc_callback, &context.debug_utils_messanger));
     KDEBUG("Vulkan debugger created");
     #endif
+
+    b8 surface_creation_result = platform_create_vulkan_surface(_backend->plat_state,&context);
+    if(!surface_creation_result)
+    {
+        KERROR("shutting down renderer");
+        return FALSE;
+    }
+    b8 device_create_result = vulkan_device_create(&context);
+    if(!device_create_result)
+    {
+        KERROR("Vulkan device creation failed, shutting down renderer");
+        return FALSE;
+    }
 
     KINFO("vulkan renderer Initilized successfully");
     return TRUE;

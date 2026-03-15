@@ -30,7 +30,7 @@ b8 create_application(struct game* game_inst)
 {
     if(Initilized)
     {
-        KFETAL("create_application called more than once");
+        KFATAL("create_application called more than once");
         return FALSE;
     }
 
@@ -52,13 +52,13 @@ b8 create_application(struct game* game_inst)
         app_state.game_instance->application_config.window_width,
         app_state.game_instance->application_config.window_height))
         {
-            KFETAL("Cannot startup platform!");
+            KFATAL("Cannot startup platform!");
             return FALSE;
         }
 
         // Renderer startup
     if (!renderer_initilize(game_inst->application_config.app_name, &app_state.plat_state)) {
-        KFETAL("Failed to initialize renderer. Aborting application.");
+        KFATAL("Failed to initialize renderer. Aborting application.");
         return FALSE;
     }
     event_register(EVENT_CODE_APPLICATION_QUIT,0,application_on_event);
@@ -100,14 +100,14 @@ b8 run_application()
             if(!app_state.game_instance->update(app_state.game_instance))
             {
                 app_state.is_running = FALSE;
-                KFETAL("game update failed!");
+                KFATAL("game update failed!");
                 break;
             }
             
             if(!app_state.game_instance->render(app_state.game_instance))
             {
                 app_state.is_running = FALSE;
-                KFETAL("game rendering failed!");
+                KFATAL("game rendering failed!");
                 break;
             }
             //KDEBUG("delta time %lf", delta_time);

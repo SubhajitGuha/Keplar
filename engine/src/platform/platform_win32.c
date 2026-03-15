@@ -6,11 +6,15 @@
 #include <windowsx.h>
 #include "core/logger.h"
 #include "containers/darray.h"
+#include "vulkan/vulkan.h"
+#include "vulkan/vulkan_win32.h"
+#include "Renderer/Vulkan/vulkan_types.inl"
 
 typedef struct internal_state
 {
     HINSTANCE hinstance; //process handle
     HWND hwnd; //window handle
+    VkSurfaceKHR surface;
 } internal_state;
 
 static f64 clock_frequency;
@@ -89,7 +93,7 @@ b8 platform_startup(
     );
     if(handle == NULL)
     {
-        KFETAL("window creation failed");
+        KFATAL("window creation failed");
         return FALSE;
     }
     else{
@@ -266,4 +270,24 @@ void platform_get_required_extension_name(const char*** name_array)
 {
     darray_push(*name_array, &"VK_KHR_win32_surface");
 }
+
+b8 platform_create_vulkan_surface(platform_state* plat_state, vulkan_context* context)
+{
+    internal_state* is = (internal_state*)plat_state->internal_state;
+    VkWin32SurfaceCreateInfoKHR ci = {};
+    ci.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+    ci.pNext = 0;
+    ci.hinstance = is->hinstance;
+    ci.hwnd = is->hwnd;
+    VkResult result = (vkCreateWin32SurfaceKHR(context->vulkan_instance,&ci,context->vulkan_alloc_callback,&context->vulkan_surface));
+    if(result != VK_SUCCESS)
+    {
+        KERROR("vulkan surface creation failed");
+        is->surface = 0;
+        return FALSE; 
+    }
+    is->surface = context->vulkan_surface;
+    return TRUE;
+}
+
 #endif
