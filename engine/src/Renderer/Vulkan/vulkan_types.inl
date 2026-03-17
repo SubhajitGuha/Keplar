@@ -20,9 +20,17 @@ typedef struct vulkan_device
     u32 compute_family_index;
     u32 transfer_family_index;
     u32 present_family_index;
+
+    VkQueue graphicsQueue;
+    VkQueue transferQueue;
+    VkQueue computeQueue;
+    VkQueue presentQueue;
+    
     VkPhysicalDeviceProperties properties;
     VkPhysicalDeviceFeatures features;
     VkPhysicalDeviceMemoryProperties memory;
+
+    vulkan_swapchain_support_info swapchain_support;
 } vulkan_device;
 
 typedef struct vulkan_context
