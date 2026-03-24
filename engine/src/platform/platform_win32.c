@@ -279,7 +279,7 @@ b8 platform_create_vulkan_surface(platform_state* plat_state, vulkan_context* co
     ci.pNext = 0;
     ci.hinstance = is->hinstance;
     ci.hwnd = is->hwnd;
-    VkResult result = (vkCreateWin32SurfaceKHR(context->vulkan_instance,&ci,context->vulkan_alloc_callback,&context->vulkan_surface));
+    VkResult result = (vkCreateWin32SurfaceKHR(context->vulkan_instance,&ci,context->allocator,&context->vulkan_surface));
     if(result != VK_SUCCESS)
     {
         KERROR("vulkan surface creation failed");

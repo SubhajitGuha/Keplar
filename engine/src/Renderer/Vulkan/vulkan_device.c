@@ -101,7 +101,7 @@ b8 vulkan_device_create(vulkan_context* context)
     deviceCi.enabledLayerCount = 0;
     deviceCi.ppEnabledLayerNames = 0;
 
-    VK_CHECK(vkCreateDevice(context->device.physical_device, &deviceCi, context->vulkan_alloc_callback, &context->device.logical_device));
+    VK_CHECK(vkCreateDevice(context->device.physical_device, &deviceCi, context->allocator, &context->device.logical_device));
     KINFO(" Vulkan logical device created");
     
     vkGetDeviceQueue(
@@ -141,7 +141,7 @@ void vulkan_device_destroy(vulkan_context* context)
     KINFO("destroying vulkan logical device");
     if(context->device.logical_device)
     {
-        vkDestroyDevice(context->device.logical_device, context->vulkan_alloc_callback);
+        vkDestroyDevice(context->device.logical_device, context->allocator);
     }
 
     context->device.physical_device = 0;

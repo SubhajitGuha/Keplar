@@ -14,11 +14,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debug_utils_message_callback(
     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
     void*                                       pUserData);
     
+i32 find_memory_index(u32 type_filter, u32 property_flags);
 static vulkan_context context;
 b8 vulkan_renderer_initilize(renderer_backend* _backend, const char* app_name)
 {
-    context.vulkan_alloc_callback = 0;
-
+    context.allocator = 0;
+    context.find_memory_index = find_memory_index;
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.apiVersion = VK_API_VERSION_1_3;
@@ -95,7 +96,7 @@ b8 vulkan_renderer_initilize(renderer_backend* _backend, const char* app_name)
 
     ci.enabledLayerCount = required_validation_layer_count;
     ci.ppEnabledLayerNames = required_validation_layer_names;
-    VK_CHECK(vkCreateInstance(&ci,context.vulkan_alloc_callback,&context.vulkan_instance));
+    VK_CHECK(vkCreateInstance(&ci,context.allocator,&context.vulkan_instance));
     KINFO("Vulkan Instance created");
 
     //debugger
@@ -114,7 +115,7 @@ b8 vulkan_renderer_initilize(renderer_backend* _backend, const char* app_name)
 
     PFN_vkCreateDebugUtilsMessengerEXT func= (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(context.vulkan_instance, "vkCreateDebugUtilsMessengerEXT");
     KASSERT_MSG(func, "failed to create debug messanger");
-    VK_CHECK(func(context.vulkan_instance,&debug_create_info,context.vulkan_alloc_callback, &context.debug_utils_messanger));
+    VK_CHECK(func(context.vulkan_instance,&debug_create_info,context.allocator, &context.debug_utils_messanger));
     KDEBUG("Vulkan debugger created");
     #endif
 
@@ -175,3 +176,20 @@ VkBool32 debug_utils_message_callback(
         }
         return VK_FALSE;
     }
+
+i32 find_memory_index(u32 type_filter, u32 property_flags)
+{
+    VkPhysicalDeviceMemoryProperties memory_properties;
+    vkGetPhysicalDeviceMemoryProperties(context.device.physical_device, &memory_properties);
+
+    for(u32 i=0;i<memory_properties.memoryTypeCount;i++)
+    {
+        if(type_filter & (1u << i) && (memory_properties.memoryTypes[i].propertyFlags & property_flags) == property_flags)
+        {
+            return i;
+        }
+    }
+
+    KWARN("Unable to find suitable memory type!");
+    return -1;
+}
