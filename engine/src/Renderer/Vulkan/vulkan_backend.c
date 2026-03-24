@@ -5,6 +5,7 @@
 #include "platform/platform.h"
 #include "vulkan_platform.h"
 #include "vulkan_device.h"
+#include "vulkan_swapchain.h"
 #include "vulkan_types.inl"
 
 // Provided by VK_EXT_debug_utils
@@ -132,12 +133,20 @@ b8 vulkan_renderer_initilize(renderer_backend* _backend, const char* app_name)
         return FALSE;
     }
 
+    vulkan_swapchain_create(&context, context.framebuffer_width, context.framebuffer_height, &context.swapchain);
     KINFO("vulkan renderer Initilized successfully");
     return TRUE;
 }
 void vulkan_renderer_shutdown(renderer_backend* _backend)
 {
+    vulkan_swapchain_destroy(&context, &context.swapchain);
     vulkan_device_destroy(&context);
+    KDEBUG("Destroying vulkan surface....");
+    if(context.vulkan_surface)
+    {
+        vkDestroySurfaceKHR(context.vulkan_instance, context.vulkan_surface, context.allocator);
+        context.vulkan_surface = 0;
+    }
 }
 b8 vulkan_renderer_begin_frame(renderer_backend* _backend, f32 delta_time)
 {

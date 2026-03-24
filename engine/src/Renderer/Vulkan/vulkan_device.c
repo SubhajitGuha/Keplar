@@ -453,3 +453,19 @@ b8 physical_device_meets_requirements(VkPhysicalDevice device,
         }
         return FALSE;
 }
+
+b8 vulkan_device_check_format_support(vulkan_device* device, VkFormat format)
+{
+    u32 flags = VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+    VkFormatProperties format_properties;
+    vkGetPhysicalDeviceFormatProperties(device->physical_device, format,&format_properties);
+    if((format_properties.linearTilingFeatures & flags) == flags)
+    {
+        return TRUE;
+    }
+    if((format_properties.optimalTilingFeatures & flags) == flags)
+    {
+        return TRUE;
+    }
+    return FALSE;
+}

@@ -3,6 +3,8 @@
 #include "vulkan/vulkan.h"
 #include "core/kassert.h"
 
+#define DEFAULT_DEPTH_FORMAT VK_FORMAT_D24_UNORM_S8_UINT
+
 typedef struct vulkan_swapchain_support_info
 {
     VkSurfaceCapabilitiesKHR surface_caps;
@@ -12,18 +14,6 @@ typedef struct vulkan_swapchain_support_info
     VkPresentModeKHR* present_modes;
 }vulkan_swapchain_support_info;
 
-typedef struct vulkan_swapchain
-{
-    VkSwapchainKHR swapchain_handle;
-    VkSurfaceFormatKHR image_format;
-    u8 max_frames_in_flight;
-    u32 image_count;
-    VkImage* images;
-    VkImageView* image_views;
-
-    vulkan_image depth_attachment;
-}vulkan_swapchain;
-
 typedef struct vulkan_image
 {
     VkImage image_handle;
@@ -32,6 +22,20 @@ typedef struct vulkan_image
     u32 width;
     u32 height;
 } vulkan_image;
+
+typedef struct vulkan_swapchain
+{
+    VkSwapchainKHR swapchain_handle;
+    VkSurfaceFormatKHR image_format;
+    VkFormat depth_attachment_format;
+    u8 max_frames_in_flight;
+    u32 image_count;
+    VkImage* images;
+    VkImageView* image_views;
+
+    vulkan_image depth_attachment;
+}vulkan_swapchain;
+
 
 typedef struct vulkan_device
 {

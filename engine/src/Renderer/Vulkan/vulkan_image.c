@@ -1,4 +1,5 @@
 #include "vulkan_image.h"
+#include "core/logger.h"
 
 void vulkan_image_create(
     vulkan_context* context,
