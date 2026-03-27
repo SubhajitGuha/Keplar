@@ -3,6 +3,7 @@
 #include "containers/darray.h"
 #include "core/kmemory.h"
 #include "containers/kstring.h"
+#include "math/math_types.h"
 
 typedef struct vulkan_physical_device_requirements
 {
