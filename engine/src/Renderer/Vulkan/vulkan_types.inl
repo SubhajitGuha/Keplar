@@ -5,6 +5,21 @@
 
 #define DEFAULT_DEPTH_FORMAT VK_FORMAT_D24_UNORM_S8_UINT
 
+typedef enum vulkan_command_buffer_state
+{
+    COMMAND_BUFFER_STATE_READY,
+    COMMAND_BUFFER_STATE_RECORDING,
+    COMMAND_BUFFER_STATE_IN_RENDER_PASS,
+    COMMAND_BUFFER_STATE_RECORDING_ENDED,
+    COMMAND_BUFFER_STATE_SUBMITTED,
+    COMMAND_BUFFER_STATE_NOT_ALLOCATED
+}vulkan_command_buffer_state;
+typedef struct vulkan_command_buffer
+{
+    VkCommandBuffer handle;
+    vulkan_command_buffer_state state;
+}vulkan_command_buffer;
+
 typedef struct vulkan_swapchain_support_info
 {
     VkSurfaceCapabilitiesKHR surface_caps;
@@ -51,6 +66,8 @@ typedef struct vulkan_device
     VkQueue computeQueue;
     VkQueue presentQueue;
     
+    VkCommandPool graphics_command_pool;
+
     VkPhysicalDeviceProperties properties;
     VkPhysicalDeviceFeatures features;
     VkPhysicalDeviceMemoryProperties memory;
@@ -71,6 +88,8 @@ typedef struct vulkan_context
     vulkan_device device;
     VkSurfaceKHR vulkan_surface;
     vulkan_swapchain swapchain;
+    // darray
+    vulkan_command_buffer* graphics_command_buffers;
     u32 image_index;
     u32 current_frame;
     b8 recreateating_swapchain;

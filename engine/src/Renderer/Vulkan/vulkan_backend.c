@@ -6,6 +6,7 @@
 #include "vulkan_platform.h"
 #include "vulkan_device.h"
 #include "vulkan_swapchain.h"
+#include "vulkan_command_buffer.h"
 #include "vulkan_types.inl"
 
 // Provided by VK_EXT_debug_utils
@@ -150,6 +151,7 @@ void vulkan_renderer_shutdown(renderer_backend* _backend)
 }
 b8 vulkan_renderer_begin_frame(renderer_backend* _backend, f32 delta_time)
 {
+
     return TRUE;
 }
 b8 vulkan_renderer_end_frame(renderer_backend* _backend, f32 delta_time)

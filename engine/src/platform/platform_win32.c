@@ -9,6 +9,7 @@
 #include "vulkan/vulkan.h"
 #include "vulkan/vulkan_win32.h"
 #include "Renderer/Vulkan/vulkan_types.inl"
+#include "core/event.h"
 
 typedef struct internal_state
 {
@@ -199,8 +200,10 @@ LRESULT CALLBACK win32_process_message(HWND hwnd, u32 msg, WPARAM w_param, LPARA
         //notify the os that erasing will be handled by the application to handle flicker
         return 1;
     case WM_CLOSE:
+        event_context context = {};
+        event_fire(EVENT_CODE_APPLICATION_QUIT,0,context);
+        return TRUE;
         // fire an event for app to quit
-        return 0;
     case WM_DESTROY:
         PostQuitMessage(0);
         return 0;

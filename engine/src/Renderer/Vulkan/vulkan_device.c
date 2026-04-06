@@ -129,11 +129,21 @@ b8 vulkan_device_create(vulkan_context* context)
         0,
         &context->device.presentQueue);
     KINFO("Queue obtained");
+
+    //create command pool for graphics queue
+    VkCommandPoolCreateInfo cp_ci = {};
+    cp_ci.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    cp_ci.queueFamilyIndex = context->device.graphics_family_index;
+    cp_ci.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    VK_CHECK(vkCreateCommandPool(context->device.logical_device, &cp_ci, context->allocator, &context->device.graphics_command_pool));
+    KINFO("graphics command pool created");
     return TRUE;
 }
 
 void vulkan_device_destroy(vulkan_context* context)
 {
+    vkDestroyCommandPool(context->device.logical_device, context->device.graphics_command_pool, context->allocator);
+
     context->device.graphicsQueue = 0;
     context->device.computeQueue = 0;
     context->device.transferQueue = 0;
@@ -232,7 +242,7 @@ b8 select_physical_device(vulkan_context* context)
         requirements.sampler_anisotropy = TRUE;
         requirements.device_extension_names = darray_create(const char*);
         darray_push(requirements.device_extension_names,&VK_KHR_SWAPCHAIN_EXTENSION_NAME);
-        
+        darray_push(requirements.device_extension_names, &VK_KHR_DYNAMIC_RENDERING_EXTENSION_NAME);
         vulkan_physical_device_queue_family_info queue_info = {};
         b8 result = physical_device_meets_requirements(
             physical_devices[i],
